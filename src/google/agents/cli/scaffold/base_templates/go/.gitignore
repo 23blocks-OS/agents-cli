@@ -51,3 +51,5 @@ e2e/load_test/.results/*.json
 *.pem
 *-key.json
 credentials*.json
+
+deployment_metadata.json.lock

@@ -231,7 +231,7 @@ Cloud Trace is enabled by default — no configuration needed. Send a few reques
 To inspect the actual prompts and responses your agent handles in production, provision the observability infrastructure:
 
 ```bash
-agents-cli infra single-project --project YOUR_DEV_PROJECT_ID
+agents-cli infra single-project --apply --project YOUR_DEV_PROJECT_ID
 ```
 
 This runs Terraform to create a dedicated service account, GCS bucket, and BigQuery dataset — and updates your deployed service to use them.

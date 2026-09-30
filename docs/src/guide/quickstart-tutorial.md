@@ -139,7 +139,7 @@ To go further and inspect the actual prompts and responses your agent handles in
 
 > *"Set up observability infrastructure for my agent"*
 
-Your coding agent runs `infra single-project`, which provisions the service account, GCS bucket, and BigQuery dataset — and updates the deployed service to use them. See the [Observability Guide](observability/index.md) for verification steps and advanced options.
+Your coding agent runs `infra single-project --apply`, which provisions the service account, GCS bucket, and BigQuery dataset — and updates the deployed service to use them. See the [Observability Guide](observability/index.md) for verification steps and advanced options.
 
 ---
 

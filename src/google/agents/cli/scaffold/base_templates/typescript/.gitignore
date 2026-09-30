@@ -208,6 +208,7 @@ tests/load_test/.results/*.csv
 my_env.tfvars
 .saved_chats
 .useful_repos/
+deployment_metadata.json.lock
 
 # A2A Inspector
 tools/a2a-inspector/

@@ -118,7 +118,7 @@ Once the eval scores are good enough, deploy to Google Cloud.
     ```
 
 !!! tip
-    To enable observability features (prompt-response logging, content logs), run `agents-cli infra single-project` after deploying. See the [Observability Guide](observability/index.md) for details.
+    To enable observability features (prompt-response logging, content logs), run `agents-cli infra single-project --apply` before deploying. See the [Observability Guide](observability/index.md) for details.
 
 For production pipelines with staging, approval gates, and CI/CD, see [Deployment](deployment.md) and [CI/CD & Production](cicd.md).
 

@@ -3,6 +3,26 @@
 All notable changes to this project will be documented in this file.
 
 
+## [1.8.0] - 2026-09-30
+
+- New flag for`agents-cli scaffold upgrade`:  `--force`. A fallback for when the 3-way merge cannot run or leaves too many conflicts, similar to the existing flag for `agents-cli scaffold enhance`. It generates only the new template and overwrites the scaffolding files:
+  - Agent code, config files and files you own are kept: your tests, custom eval metrics, eval datasets, READMEs, agent guidance files, `.gitignore`, `deployment_metadata.json` and Terraform `env.tfvars` files.
+  - Dependencies are merged as a union. For a dependency in both files the template's version wins, and dependencies only your project has are kept.
+- `agents-cli scaffold upgrade` keeps your Terraform `env.tfvars` files instead of treating them as template files.
+- `agents-cli scaffold upgrade` and `agents-cli scaffold enhance` stop with an error when writing the merged dependencies fails. Previously they reported success and stamped the new version, so a rerun said "already at version" and could not retry.
+- `agents-cli run --mode a2a` sends messages and your bearer token only to the `--url` host, not to the endpoint declared in the agent card.
+  - https://github.com/google/agents-cli/issues/46
+- Two concurrent `agents-cli deploy` deploys no longer overwrite each other's deployment state.
+  - https://github.com/google/agents-cli/issues/76
+- Clarified the documentation on when to use `agents-cli infra single-project --apply` for deployments.
+  - https://github.com/google/agents-cli/issues/79
+- Generated CI/CD Terraform for Cloud Build now waits for the CI/CD service account's IAM grants to propagate before creating build triggers, so the first push after `agents-cli infra cicd` no longer fails on missing permissions.
+- Generated CI/CD Terraform grants Artifact Registry read access on the app's own repository instead of the whole CI/CD project. Destroying one project's infrastructure no longer breaks image pulls for other projects sharing the CI/CD project. A deploy project that relied on the project-wide grant to read another repository loses that access.
+- `agents-cli deploy` prints pod state, pod descriptions and namespace events when a GKE rollout does not finish.
+- Changed the formatting of some error messages so that they stand out more.
+- Updated the ADK version in scaffolded projects to `google-adk>=2.9.2,<3.0.0`.
+- Added experimental usage telemetry, off by default. Enable it with `AGENTS_CLI_EXPERIMENTS='{"cli_telemetry": true}'`. It writes one log entry per command to your own Cloud project, with the command, exit code, error class, duration, and CLI, Python and OS versions (but not arguments). Opt out with `AGENTS_CLI_TELEMETRY=0` or `DO_NOT_TRACK=1`.
+
 ## [1.7.0] - 2026-09-22
 
 - **Live (voice) agents now work in `run` and `eval`.** Pass `--mode adk_live` wherever you already pass `--mode adk`:
@@ -18,6 +38,8 @@ All notable changes to this project will be documented in this file.
 - `agents-cli deploy` and scaffolded Terraform both set `identity_type = SERVICE_ACCOUNT` on the Agent Runtime engine, so an agent keeps its service account when Agent Runtime changes that default to Agent Identity.
 - `agents-cli scaffold create --agent <remote URL>` handles symlinks again. Since 1.4.1 every symlink in a remote template was dropped, so a template that shared a library across variants scaffolded a project that failed at import. Links inside the cloned repo are copied as real file contents, and a link pointing outside it stops the scaffold with an error.
   - https://github.com/google/agents-cli/issues/89
+- `agents-cli deploy` gets a new flag `--framework`, which sets the `agent_framework` property on the deployed agents.
+  - https://github.com/google/agents-cli/issues/63
 - The generated Cloud SQL password no longer lands in Terraform state. State lives in `gs://{cicd_project}-terraform-state`, whose default IAM let anyone with Viewer on the CI/CD project read the prod database password. Generated Terraform now needs Terraform 1.11.0 or later.
 - Scaffolded projects need `google-adk>=2.8.0`. 2.7.x does not emit `interactionStatus`, so a Live turn boundary falls back to a heuristic there. The `<2.9.0` cap from 1.6.1 is unchanged.
 - The deprecated `--trace-to-cloud` alias is gone from `agents-cli playground` and `agents-cli run`. Use `--otel-to-cloud`.

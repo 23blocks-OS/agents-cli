@@ -12,6 +12,18 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+# IAM grants take minutes to propagate. The triggers wait on this so a push
+# right after apply doesn't start a build whose service account can't yet
+# write to the logs bucket.
+resource "time_sleep" "wait_for_cicd_iam" {
+  create_duration = "180s"
+
+  depends_on = [
+    google_project_iam_member.cicd_project_roles,
+    google_project_iam_member.other_projects_roles,
+  ]
+}
+
 # a. Create PR checks trigger
 resource "google_cloudbuild_trigger" "pr_checks" {
   name            = "pr-${var.project_name}"
@@ -45,7 +57,8 @@ resource "google_cloudbuild_trigger" "pr_checks" {
     resource.google_project_service.cicd_services, 
     resource.google_project_service.deploy_project_services, 
     google_cloudbuildv2_connection.github_connection, 
-    google_cloudbuildv2_repository.repo
+    google_cloudbuildv2_repository.repo,
+    time_sleep.wait_for_cicd_iam
   ]
 }
 
@@ -98,7 +111,8 @@ resource "google_cloudbuild_trigger" "cd_pipeline" {
     resource.google_project_service.cicd_services,
     resource.google_project_service.deploy_project_services,
     google_cloudbuildv2_connection.github_connection,
-    google_cloudbuildv2_repository.repo
+    google_cloudbuildv2_repository.repo,
+    time_sleep.wait_for_cicd_iam
   ]
 
 }
@@ -138,7 +152,8 @@ resource "google_cloudbuild_trigger" "deploy_to_prod_pipeline" {
     resource.google_project_service.cicd_services, 
     resource.google_project_service.deploy_project_services, 
     google_cloudbuildv2_connection.github_connection, 
-    google_cloudbuildv2_repository.repo
+    google_cloudbuildv2_repository.repo,
+    time_sleep.wait_for_cicd_iam
   ]
 
 }

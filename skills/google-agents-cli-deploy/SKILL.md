@@ -13,7 +13,7 @@ description: >
 metadata:
   author: Google
   license: Apache-2.0
-  version: 1.7.0
+  version: 1.8.0
   requires:
     bins:
       - agents-cli
@@ -85,15 +85,15 @@ All three targets are container-based, so any language works.
 
 **IMPORTANT**: Never run `agents-cli deploy` without explicit human approval.
 
-> **Do NOT run `agents-cli infra single-project` before deploying.** It is not a prerequisite — `agents-cli deploy` works on its own. Run it separately if the user needs observability features (prompt-response logging, BigQuery analytics) — see `/google-agents-cli-observability`.
+> **Not a prerequisite.** `agents-cli deploy` works on its own. One exception: if the user wants Terraform-managed observability (prompt-response logging, BigQuery analytics), run `agents-cli infra single-project --apply` first, see `/google-agents-cli-observability`.
 
 ### Single-Project Infrastructure Setup (Optional — Advanced)
 
-`agents-cli infra single-project` runs `terraform apply` in `deployment/terraform/single-project/`. Use this to **provision single-project GCP infrastructure without CI/CD** (service accounts, IAM bindings, telemetry resources, Artifact Registry). Also useful to test things in a single project before going to production. It is NOT required for deploying.
+`agents-cli infra single-project --apply` runs `terraform apply` in `deployment/terraform/single-project/`. Use this to **provision single-project GCP infrastructure without CI/CD** (service accounts, IAM bindings, telemetry resources, Artifact Registry). It is required before deployment only when Terraform will manage observability; basic Agent Runtime and Cloud Run deployments do not need it, while GKE deploy handles its own targeted Terraform.
 
 ```bash
 # Optional — provision infrastructure in a single GCP project
-agents-cli infra single-project
+agents-cli infra single-project --apply
 ```
 
 > **Note:** `agents-cli deploy` doesn't automatically use the Terraform-created `app_sa`. Pass the service account explicitly: `agents-cli deploy --service-account SA_EMAIL`.

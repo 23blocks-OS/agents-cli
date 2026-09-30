@@ -55,7 +55,7 @@ agents-cli scaffold enhance -d cloud_run
 Run `agents-cli scaffold enhance --help` to see all available options.
 
 !!! tip
-    To enable observability features (prompt-response logging, content logs), run `agents-cli infra single-project` after deploying. Terraform provisions the telemetry resources and updates your service to use them. See the [Observability Guide](observability/index.md) for details.
+    To enable observability features (prompt-response logging, content logs), run `agents-cli infra single-project --apply` before deploying. Terraform provisions the telemetry resources, and the subsequent deploy uses them. See the [Observability Guide](observability/index.md) for details.
 
 **Verify it works:**
 

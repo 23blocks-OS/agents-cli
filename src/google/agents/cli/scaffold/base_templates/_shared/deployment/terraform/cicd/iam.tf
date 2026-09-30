@@ -65,27 +65,30 @@ resource "google_project_iam_member" "app_sa_roles" {
 }
 
 {% if cookiecutter.deployment_target == 'cloud_run' %}
-# 4. Allow Cloud Run service SA to pull containers stored in the CICD project
-resource "google_project_iam_member" "cicd_run_invoker_artifact_registry_reader" {
+# 4. Allow Cloud Run service SA to pull containers stored in the CICD project.
+# Granted on this app's own repository rather than the whole CICD project.
+resource "google_artifact_registry_repository_iam_member" "cicd_run_invoker_artifact_registry_reader" {
   for_each = local.deploy_project_ids
-  project  = var.cicd_runner_project_id
 
+  project    = google_artifact_registry_repository.repo-artifacts-genai.project
+  location   = google_artifact_registry_repository.repo-artifacts-genai.location
+  repository = google_artifact_registry_repository.repo-artifacts-genai.name
   role       = "roles/artifactregistry.reader"
   member     = "serviceAccount:service-${data.google_project.projects[each.key].number}@serverless-robot-prod.iam.gserviceaccount.com"
-  depends_on = [resource.google_project_service.cicd_services, resource.google_project_service.deploy_project_services]
-
 }
 
 {% endif %}
 {% if cookiecutter.deployment_target == 'gke' %}
-# Allow GKE nodes to pull containers from CICD project Artifact Registry
-resource "google_project_iam_member" "cicd_gke_artifact_registry_reader" {
+# Allow GKE nodes to pull containers from CICD project Artifact Registry.
+# Repository-scoped for the same reason as the Cloud Run grant above.
+resource "google_artifact_registry_repository_iam_member" "cicd_gke_artifact_registry_reader" {
   for_each = local.deploy_project_ids
-  project  = var.cicd_runner_project_id
 
+  project    = google_artifact_registry_repository.repo-artifacts-genai.project
+  location   = google_artifact_registry_repository.repo-artifacts-genai.location
+  repository = google_artifact_registry_repository.repo-artifacts-genai.name
   role       = "roles/artifactregistry.reader"
   member     = "serviceAccount:${data.google_project.projects[each.key].number}-compute@developer.gserviceaccount.com"
-  depends_on = [resource.google_project_service.cicd_services, resource.google_project_service.deploy_project_services]
 }
 
 # Allow GKE Kubernetes ServiceAccount to impersonate the application GCP SA via Workload Identity

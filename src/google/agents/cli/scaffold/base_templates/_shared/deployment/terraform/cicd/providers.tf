@@ -28,6 +28,10 @@ terraform {
       source  = "hashicorp/random"
       version = "~> 3.7.0"
     }
+    time = {
+      source  = "hashicorp/time"
+      version = "~> 0.14.0"
+    }
 {%- if cookiecutter.deployment_target == 'gke' %}
     kubernetes = {
       source  = "hashicorp/kubernetes"

@@ -56,3 +56,5 @@ test-results/
 *.pem
 *-key.json
 credentials*.json
+
+deployment_metadata.json.lock
